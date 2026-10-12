@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Games</title>
+<style>
+  :root {
+    /* SITE-WIDE CUSTOMIZATION */
+    --page-bg: #050b16;
+    --page-bg-2: #07182a;
+    --ink: #edfaff;
+    --muted: #9bb8c9;
+    --blue: #278bff;
+    --green: #28f0b4;
+    --card-radius: 17px;
+    --card-height: 174px;
+    --grid-gap: 22px;
+    --page-padding: 25px;
+    --header-top: 42px;
+    --header-bottom: 43px;
+    --card-shadow: 0 10px 30px #00000030;
+    --card-hover-shadow: 0 14px 35px #00d9ff26;
+  }
+  * { box-sizing: border-box; }
+  html { min-height: 100%; background: var(--page-bg); }
+  body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--ink);
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    background:
+      radial-gradient(ellipse at 12% 0%, #063c593d, transparent 36rem),
+      radial-gradient(ellipse at 92% 15%, #063d3540, transparent 34rem),
+      linear-gradient(145deg, var(--page-bg), var(--page-bg-2) 58%, #030711);
+    background-attachment: fixed;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .22;
+    background-image: linear-gradient(#4ebdff0b 1px, transparent 1px), linear-gradient(90deg, #4ebdff0b 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+  }
+  .site-header {
+    text-align: center;
+    padding: var(--header-top) 16px var(--header-bottom);
+    position: relative;
+  }
+  .site-title {
+    margin: 0;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    font-size: clamp(2.6rem, 5.8vw, 4.5rem);
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -3px;
+    color: #f3fbff;
+    text-shadow: 0 0 28px #26b9ff27;
+  }
+  .site-title::after {
+    content: "";
+    display: block;
+    width: clamp(100px, 17vw, 190px);
+    height: 4px;
+    margin: 12px auto 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    box-shadow: 0 0 20px #16d9c46b;
+  }
+  .site-subtitle {
+    margin: 12px 0 0;
+    font-size: clamp(1rem, 1.7vw, 1.2rem);
+    color: var(--muted);
+  }
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--grid-gap);
+    padding: 0 var(--page-padding) 42px;
+    max-width: 1540px;
+    margin: 0 auto;
+  }
+  .game-card {
+    display: block;
+    position: relative;
+    height: var(--card-height);
+    overflow: hidden;
+    border: var(--card-border-width, 2px) solid var(--card-border, #1a7890);
+    border-radius: var(--card-radius);
+    background: var(--card-bg, #0b2030);
+    color: inherit;
+    text-decoration: none;
+    isolation: isolate;
+    box-shadow: var(--card-shadow);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .game-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(135deg, #ffffff0b, transparent 48%, #00ffc30a);
+    opacity: var(--gloss-opacity, 1);
+  }
+  .game-card:hover, .game-card:focus-visible {
+    transform: translateY(-5px) scale(1.012);
+    box-shadow: var(--card-hover-shadow);
+    border-color: var(--card-hover-border, var(--green));
+    outline: none;
+  }
+  .game-card:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+  .game-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--image-fit, cover);
+    object-position: var(--image-position, center);
+    transition: transform .35s ease, filter .25s ease;
+    filter: var(--image-filter, none);
+  }
+  .game-card:hover img { transform: scale(var(--image-hover-zoom, 1.045)); }
+  .card-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 15px;
+    color: var(--placeholder-text, #effcff);
+    background:
+      radial-gradient(ellipse at var(--glow-x, 15%) var(--glow-y, 20%), var(--glow-color, #00d5ff2b), transparent 58%),
+      linear-gradient(var(--gradient-angle, 135deg), var(--card-bg, #0b2030), var(--card-bg-2, #092b39));
+  }
+  .card-placeholder::before, .card-placeholder::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    border: var(--decor-line-width, 2px) solid var(--accent, #28f0b4);
+    opacity: var(--decor-opacity, .55);
+    pointer-events: none;
+  }
+  .card-placeholder::before {
+    width: var(--decor-size, 145px);
+    height: var(--decor-size, 145px);
+    top: var(--decor-top, -72px);
+    right: var(--decor-right, -25px);
+    box-shadow: 0 0 30px var(--accent-glow, #28f0b42c), inset 0 0 24px var(--accent-glow, #28f0b42c);
+  }
+  .card-placeholder::after {
+    width: calc(var(--decor-size, 145px) * .62);
+    height: calc(var(--decor-size, 145px) * .62);
+    bottom: -48px;
+    left: 18px;
+    opacity: calc(var(--decor-opacity, .55) * .75);
+  }
+  .placeholder-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--title-gap, 6px);
+    max-width: 100%;
+    text-align: center;
+    transform: translateY(var(--title-y, 0px));
+  }
+  .placeholder-title {
+    font-family: var(--title-font, "Trebuchet MS", Arial, sans-serif);
+    font-weight: var(--title-weight, 800);
+    font-size: var(--title-size, clamp(1.45rem, 2.6vw, 2.5rem));
+    line-height: 1.04;
+    letter-spacing: var(--title-letter-spacing, -1px);
+    overflow-wrap: anywhere;
+    text-shadow: 0 2px 16px var(--title-glow, #00d9ff2e);
+  }
+  .placeholder-subtitle {
+    max-width: 95%;
+    color: var(--subtitle-color, #a9cbd9);
+    font-size: var(--subtitle-size, .86rem);
+    line-height: 1.35;
+    font-weight: 500;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+  .placeholder-icon {
+    display: block;
+    font-family: sans-serif;
+    font-size: var(--icon-size, clamp(1.35rem, 2.4vw, 2.2rem));
+    line-height: 1;
+    filter: drop-shadow(0 0 12px var(--accent-glow, #28f0b42c));
+  }
+  .game-badge {
+    position: absolute;
+    z-index: 3;
+    top: var(--badge-top, 10px);
+    left: var(--badge-left, 11px);
+    padding: var(--badge-padding, 5px 9px);
+    border: 1px solid var(--badge-border, #ffffff30);
+    border-radius: var(--badge-radius, 99px);
+    background: var(--badge-bg, #06121cce);
+    color: var(--badge-color, #b7fff0);
+    font-size: var(--badge-size, .66rem);
+    line-height: 1;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    font-weight: 800;
+    backdrop-filter: blur(8px);
+  }
+  .game-card-caption {
+    position: absolute;
+    z-index: 3;
+    inset: auto 0 0;
+    padding: var(--caption-padding, 25px 14px 12px);
+    color: var(--caption-color, #f2fdff);
+    font-size: var(--caption-size, .9rem);
+    font-weight: 800;
+    background: linear-gradient(transparent, var(--caption-bg, #04121de8));
+    opacity: var(--caption-opacity, 1);
+    transform: translateY(var(--caption-offset, 0));
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+  }
+  .game-card:hover .game-card-caption {
+    opacity: var(--caption-hover-opacity, 1);
+    transform: translateY(0);
+  }
+  .game-card[data-no-caption="true"] .game-card-caption { display: none; }
+  @media (max-width: 850px) {
+    :root { --grid-gap: 14px; --page-padding: 16px; }
+    .game-card { height: clamp(115px, 19vw, 160px); }
+    .site-header { padding-bottom: 32px; }
+  }
+  @media (max-width: 600px) {
+    :root { --grid-gap: 12px; --page-padding: 12px; }
+    .site-header { padding: 29px 12px 30px; }
+    .site-title { letter-spacing: -2px; }
+    .games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-bottom: 25px; }
+    .game-card { height: auto; aspect-ratio: 1.8 / 1; border-radius: 12px; }
+    .placeholder-title { font-size: var(--mobile-title-size, clamp(1.05rem, 4.1vw, 1.55rem)); }
+    .placeholder-subtitle { font-size: .72rem; }
+    .game-badge { font-size: .56rem; padding: 4px 6px; }
+  }
+  @media (max-width: 360px) {
+    .games-grid { grid-template-columns: 1fr; }
+    .game-card { aspect-ratio: 2 / 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <!-- CUSTOMIZE: Change the title and subtitle below -->
+    <h1 class="site-title">EVERYBODYSIM</h1>
+    <p class="site-subtitle">play my games please i need money</p>
+  </header>
+
+  <main>
+    <div class="games-grid" id="games-grid" aria-label="Games">
+      <!-- Game cards are generated from the GAMES list near the bottom of this file. -->
+    </div>
+  </main>
+
+  <script>
+    /*
+    ================================================================
+    GAME CARD CUSTOMIZATION
+    Each object below controls ONE card. You can add as many as you like.
+    For image: use a URL or a relative path like "images/skid-circuit.png".
+    Leave image: "" to show a custom-designed gradient title card.
+    ================================================================
+    */
+    const GAMES = [
+      {
+        title: "Skid Circuit",
+        subtitle: "very tuff game you should click it",
+        link: "https://everybodysim.github.io/Racing-game",
+        image: "",
+        icon: "",
+        badge: "RACING",
+        /* Card surface */
+        background: "#071d31",
+        background2: "#073e45",
+        gradientAngle: "125deg",
+        border: "#147c9b",
+        hoverBorder: "#2af0c0",
+        borderWidth: "2px",
+        radius: "17px",
+        /* Placeholder decoration */
+        accent: "#28f0b4",
+        glowColor: "#087dff59",
+        accentGlow: "#28f0b43d",
+        decorSize: "155px",
+        decorOpacity: ".6",
+        /* Typography */
+        textColor: "#f1ffff",
+        titleSize: "clamp(1.5rem, 2.6vw, 2.5rem)",
+        titleFont: '"Trebuchet MS", Arial, sans-serif',
+        titleWeight: "900",
+        titleLetterSpacing: "-1px",
+        subtitleColor: "#a4dbe6",
+        /* Image behavior */
+        imageFit: "cover",
+        imagePosition: "center",
+        imageFilter: "none",
+        imageHoverZoom: "1.05",
+        /* Optional card extras */
+        caption: "PLAY GAME ↗",
+        captionOpacity: "1",
+        badgeBackground: "#04131ddd",
+        badgeColor: "#9effe3",
+        badgeBorder: "#28f0b44d",
+        /* Set to true to hide the bottom caption */
+        hideCaption: false
+      },
+      {
+        title: "Stair Shove",
+        subtitle: "bonk bonk bonk",
+        link: "https://everybodysim.github.io/stair-shove",
+        image: "",
+        icon: "",
+        badge: "FUN",
+        background: "#10172a",
+        background2: "#29234a",
+        gradientAngle: "135deg",
+        border: "#355e9c",
+        hoverBorder: "#55d9ff",
+        accent: "#55d9ff",
+        glowColor: "#7b5cff4a",
+        accentGlow: "#55d9ff3d",
+        textColor: "#f6f8ff",
+        subtitleColor: "#b4c4e9",
+        caption: "PLAY GAME ↗",
+        imageFit: "cover",
+        imagePosition: "center",
+        imageFilter: "none",
+        badgeBackground: "#11172be0",
+        badgeColor: "#c4efff"
+      },
+      {
+        title: "Polytrack 6",
+        subtitle: "thanks to uhh i forget who made this",
+        link: "https://everybodysim.github.io/Polytrack6",
+        image: "",
+        icon: "",
+        badge: "RACING",
+        background: "#062b2d",
+        background2: "#07584c",
+        gradientAngle: "135deg",
+        border: "#168b7b",
+        hoverBorder: "#39ffc0",
+        accent: "#39ffc0",
+        glowColor: "#00bfa65c",
+        accentGlow: "#39ffc04a",
+        textColor: "#edfff8",
+        subtitleColor: "#a5e6d1",
+        caption: "PLAY GAME ↗",
+        imageFit: "cover",
+        imagePosition: "center",
+        imageFilter: "none",
+        badgeBackground: "#052b26e8",
+        badgeColor: "#aaffdd"
+      }
+    ];
+
+    const grid = document.getElementById("games-grid");
+
+    function setVar(element, name, value) {
+      if (value !== undefined && value !== null && value !== "") {
+        element.style.setProperty(name, value);
+      }
+    }
+
+    function makePlaceholder(game) {
+      const holder = document.createElement("div");
+      holder.className = "card-placeholder";
+
+      const content = document.createElement("div");
+      content.className = "placeholder-content";
+
+      if (game.icon) {
+        const icon = document.createElement("span");
+        icon.className = "placeholder-icon";
+        icon.textContent = game.icon;
+        content.appendChild(icon);
+      }
+
+      const title = document.createElement("div");
+      title.className = "placeholder-title";
+      title.textContent = game.title || "Untitled Game";
+      content.appendChild(title);
+
+      if (game.subtitle) {
+        const subtitle = document.createElement("div");
+        subtitle.className = "placeholder-subtitle";
+        subtitle.textContent = game.subtitle;
+        content.appendChild(subtitle);
+      }
+
+      holder.appendChild(content);
+      return holder;
+    }
+
+    GAMES.forEach((game) => {
+      const card = document.createElement("a");
+      card.className = "game-card";
+      card.href = game.link || "#";
+      card.setAttribute("aria-label", `Play ${game.title || "game"}`);
+      card.dataset.noCaption = String(game.hideCaption === true);
+
+      /* Card colors, dimensions and shape */
+      setVar(card, "--card-bg", game.background || "#0b2030");
+      setVar(card, "--card-bg-2", game.background2 || "#092b39");
+      setVar(card, "--card-border", game.border || "#1a7890");
+      setVar(card, "--card-hover-border", game.hoverBorder || game.accent || "#28f0b4");
+      setVar(card, "--card-border-width", game.borderWidth);
+      setVar(card, "--card-radius", game.radius);
+      setVar(card, "--accent", game.accent || "#28f0b4");
+      setVar(card, "--accent-glow", game.accentGlow || "#28f0b42c");
+      setVar(card, "--glow-color", game.glowColor || "#00d5ff2b");
+      setVar(card, "--gradient-angle", game.gradientAngle);
+      setVar(card, "--decor-size", game.decorSize);
+      setVar(card, "--decor-opacity", game.decorOpacity);
+      setVar(card, "--decor-line-width", game.decorLineWidth);
+      setVar(card, "--glow-x", game.glowX);
+      setVar(card, "--glow-y", game.glowY);
+      setVar(card, "--decor-top", game.decorTop);
+      setVar(card, "--decor-right", game.decorRight);
+
+      /* Typography */
+      setVar(card, "--placeholder-text", game.textColor || "#effcff");
+      setVar(card, "--title-size", game.titleSize);
+      setVar(card, "--mobile-title-size", game.mobileTitleSize);
+      setVar(card, "--title-font", game.titleFont);
+      setVar(card, "--title-weight", game.titleWeight);
+      setVar(card, "--title-letter-spacing", game.titleLetterSpacing);
+      setVar(card, "--title-gap", game.titleGap);
+      setVar(card, "--title-y", game.titleY);
+      setVar(card, "--title-glow", game.titleGlow);
+      setVar(card, "--subtitle-color", game.subtitleColor);
+      setVar(card, "--subtitle-size", game.subtitleSize);
+      setVar(card, "--icon-size", game.iconSize);
+
+      /* Thumbnail image options */
+      setVar(card, "--image-fit", game.imageFit);
+      setVar(card, "--image-position", game.imagePosition);
+      setVar(card, "--image-filter", game.imageFilter);
+      setVar(card, "--image-hover-zoom", game.imageHoverZoom);
+
+      /* Optional badge in the top-left corner */
+      if (game.badge) {
+        const badge = document.createElement("span");
+        badge.className = "game-badge";
+        badge.textContent = game.badge;
+        setVar(card, "--badge-bg", game.badgeBackground);
+        setVar(card, "--badge-color", game.badgeColor);
+        setVar(card, "--badge-border", game.badgeBorder);
+        setVar(card, "--badge-size", game.badgeSize);
+        setVar(card, "--badge-radius", game.badgeRadius);
+        setVar(card, "--badge-padding", game.badgePadding);
+        setVar(card, "--badge-top", game.badgeTop);
+        setVar(card, "--badge-left", game.badgeLeft);
+        card.appendChild(badge);
+      }
+
+      /* Click behavior: use a real link for each card. */
+      if (!game.link || game.link === "#") {
+        card.addEventListener("click", (event) => event.preventDefault());
+      }
+      if (game.newTab === true) {
+        card.target = "_blank";
+        card.rel = "noopener noreferrer";
+      }
+
+      /* Thumbnail or custom gradient placeholder */
+      const content = game.image ? document.createElement("img") : makePlaceholder(game);
+      if (game.image) {
+        content.src = game.image;
+        content.alt = game.title || "Game thumbnail";
+        content.loading = "lazy";
+        content.onerror = () => {
+          const placeholder = makePlaceholder(game);
+          content.replaceWith(placeholder);
+        };
+      }
+      card.appendChild(content);
+
+      /* Optional bottom caption */
+      if (game.caption && game.hideCaption !== true) {
+        const caption = document.createElement("span");
+        caption.className = "game-card-caption";
+        caption.textContent = game.caption;
+        setVar(card, "--caption-color", game.captionColor);
+        setVar(card, "--caption-bg", game.captionBackground);
+        setVar(card, "--caption-size", game.captionSize);
+        setVar(card, "--caption-padding", game.captionPadding);
+        setVar(card, "--caption-opacity", game.captionOpacity);
+        setVar(card, "--caption-hover-opacity", game.captionHoverOpacity);
+        setVar(card, "--caption-offset", game.captionOffset);
+        card.appendChild(caption);
+      }
+
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
