@@ -254,6 +254,31 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
   }
+
+  /* Top-right visitor counter */
+  #visitor-counter {
+    position: fixed;
+    top: 12px;
+    right: 14px;
+    z-index: 1000;
+    max-width: calc(100vw - 28px);
+    padding: 8px 11px;
+    border: 1px solid #ffffff24;
+    border-radius: 11px;
+    background: rgba(5, 11, 22, .88);
+    color: #d9f7ff;
+    font: 11px/1.4 system-ui, sans-serif;
+    text-align: right;
+    box-shadow: 0 8px 24px #0005;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  #visitor-counter a { color: #7de8d0; text-decoration: none; }
+  #visitor-counter a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    #visitor-counter { top: 8px; right: 8px; padding: 5px 7px; font-size: 10px; }
+  }
+
 </style>
 </head>
 <body>
@@ -535,5 +560,13 @@
       grid.appendChild(card);
     });
   </script>
+
+<!-- Freevisitorcounters.com visitor counter -->
+<div id="visitor-counter">
+  <a href="http://www.freevisitorcounters.com">at Freevisitorcounters.com</a>
+  <script type="text/javascript" src="https://www.freevisitorcounters.com/auth.php?id=d4cda8c721d63e56d034abba14a9acd88f139701"></script>
+  <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1667753/t/2"></script>
+</div>
+
 </body>
 </html>
