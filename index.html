@@ -267,7 +267,7 @@
     /* Copy link */
     const btn = document.getElementById("copy");
     btn.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText("https://everybody-sim.github.io"); btn.textContent = "Copied"; }
+      try { await navigator.clipboard.writeText("https://everybodysim.wasmer.app/"); btn.textContent = "Copied"; }
       catch { btn.textContent = "Press Ctrl+C"; }
       setTimeout(() => btn.textContent = "Copy link", 1600);
     });
