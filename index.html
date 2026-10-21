@@ -159,7 +159,7 @@
       <h1>EVERYBODYSIM</h1>
       <p>ayyy is the new look tuff? totally didnt ask ai</p>
       <div class="address">
-        <span id="url">https://everybodysim.wasmer.app/</span>
+        <span id="url">https://everybodysim.github.io/</span>
         <button id="copy" type="button">Copy link</button>
       </div>
       <div class="hint">Got blocked? Bookmark this new address with <kbd>Ctrl</kbd> + <kbd>D</kbd> so you don't lose it.</div>
@@ -267,7 +267,7 @@
     /* Copy link */
     const btn = document.getElementById("copy");
     btn.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText("https://everybodysim.wasmer.app/"); btn.textContent = "Copied"; }
+      try { await navigator.clipboard.writeText("https://everybodysim.github.io/"); btn.textContent = "Copied"; }
       catch { btn.textContent = "Press Ctrl+C"; }
       setTimeout(() => btn.textContent = "Copy link", 1600);
     });
